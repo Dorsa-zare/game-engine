@@ -15,6 +15,8 @@ class Boot extends Phaser.Scene {
             endFrame: 5
         });
 
+        this.load.image(`car`, `assets/images/car.png`);
+
         this.load.on(`complete`, () => {
             this.scene.start(`play`);
         });
