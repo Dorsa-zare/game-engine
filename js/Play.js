@@ -15,7 +15,7 @@ class Play extends Phaser.Scene {
         // Add physics-enabled sprite for avatar
         this.avatar = this.physics.add.sprite(300, 300, `avatar`);
         // Set the scale of the sprite
-        this.avatar.setScale(2);
+        this.avatar.setScale(2.2);
         // Call the method to create animations
         this.createAnimations();
         // Define cursors for keyboard input
@@ -70,7 +70,7 @@ class Play extends Phaser.Scene {
 
     addCars() {
         // Add the first car sprite moving from right to left
-        this.car1 = this.physics.add.sprite(this.game.config.width + 100, 240, `car`);
+        this.car1 = this.physics.add.sprite(this.game.config.width + 100, 170, `car`);
         this.car1.setScale(0.05);
 
         // Define the tween to move the first car from right to left
@@ -83,7 +83,7 @@ class Play extends Phaser.Scene {
         });
 
         // Add the second car sprite moving from left to right
-        this.car2 = this.physics.add.sprite(-100, 380, `car`);
+        this.car2 = this.physics.add.sprite(-100, 300, `car`);
         this.car2.setScale(0.05);
 
         // Define the tween to move the second car from left to right
@@ -95,20 +95,20 @@ class Play extends Phaser.Scene {
             repeat: -1
         });
         // Add the third car sprite moving from right to left
-        this.car3 = this.physics.add.sprite(this.game.config.width + 100, 520, `car`);
+        this.car3 = this.physics.add.sprite(this.game.config.width + 100, 430, `car`);
         this.car3.setScale(0.05);
 
         // Define the tween to move the third car from right to left
         this.tweens.add({
             targets: this.car3,
-            x: -100, 
+            x: -100,
             duration: 1700,
             ease: 'Linear',
-            repeat: -1 
+            repeat: -1
         });
 
         // Setup collider between avatar and cars
-        this.physics.add.collider(this.avatar, [this.car1, this.car2, this.car3, this.car4], this.handleCollision, null, this);
+        this.physics.add.collider(this.avatar, [this.car1, this.car2, this.car3], this.handleCollision, null, this);
     }
 
 
@@ -122,13 +122,13 @@ class Play extends Phaser.Scene {
     }
 
     addPedestrians() {
-        // Define the number of pedestrians you want to add
+        // Define the number of pedestrians
         const numPedestrians = 3;
 
         for (let i = 0; i < numPedestrians; i++) {
             // Generate random coordinates within the canvas boundaries
-            const x = Phaser.Math.Between(0, this.game.config.width);
-            const y = Phaser.Math.Between(0, this.game.config.height);
+            const x = Phaser.Math.Between(100, this.game.config.width);
+            const y = Phaser.Math.Between(100, this.game.config.height);
 
             // Add pedestrian sprite
             const pedestrian = this.add.sprite(x, y, 'pedestrian');
