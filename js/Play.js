@@ -6,39 +6,31 @@ class Play extends Phaser.Scene {
     }
 
     create() {
-        // Set the background color to gray
-        this.cameras.main.setBackgroundColor(0xbfbfbf); // Light gray
+        // Add the street image as the background
+        const street = this.add.image(0, 0, 'street').setOrigin(0);
 
-        // Add physics-enabled sprite
+        // Set the scale of the street image 
+        street.setScale(1);
+
+        // Add physics-enabled sprite for avatar
         this.avatar = this.physics.add.sprite(300, 300, `avatar`);
         // Set the scale of the sprite
         this.avatar.setScale(2);
         // Call the method to create animations
         this.createAnimations();
-
         // Define cursors for keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // Add green squares
-        this.addGreenSquare(100, 100); // Top-left corner
-        this.addGreenSquare(700, 100); // Top-right corner
-        this.addGreenSquare(100, 500); // Bottom-left corner
-        this.addGreenSquare(700, 500); // Bottom-right corner
-
         // Display Cars
         this.addCars();
-    }
 
-    addGreenSquare(x, y) {
-        // Create green square
-        let square = this.add.rectangle(x, y, 350, 200, 0x5aab46); // Green color
-        square.setOrigin(0.5);
-        return square;
+        // Display pedestrians
+        this.addPedestrians();
     }
 
 
     update() {
-        // Movement controls
+        // Movement controls for the avatar
         this.avatar.setVelocity(0);
 
         if (this.cursors.left.isDown) {
@@ -53,6 +45,8 @@ class Play extends Phaser.Scene {
         else if (this.cursors.down.isDown) {
             this.avatar.setVelocityY(300);
         }
+        // Check collision between avatar and cars
+        this.physics.world.collide(this.avatar, [this.car1, this.car2], this.handleCollision, null, this);
     }
 
     createAnimations() {
@@ -75,33 +69,76 @@ class Play extends Phaser.Scene {
 
 
     addCars() {
-        // Add the first car sprite moving downwards
-        this.car1 = this.add.sprite(340, 800, `car`);
+        // Add the first car sprite moving from right to left
+        this.car1 = this.physics.add.sprite(this.game.config.width + 100, 240, `car`);
         this.car1.setScale(0.05);
-        this.car1.setRotation(Phaser.Math.DegToRad(180)); // Set rotation to 180 degrees
 
-        // Define the tween to move the first car from bottom to top
+        // Define the tween to move the first car from right to left
         this.tweens.add({
             targets: this.car1,
-            y: -100, // Destination Y coordinate
-            duration: 2000, // Duration of the tween in milliseconds
+            x: -100,
+            duration: 2300, // Duration of the tween in milliseconds
             ease: 'Linear',
             repeat: -1 // Repeat indefinitely
         });
 
-        // Add the second car sprite moving upwards
-        this.car2 = this.add.sprite(460, -100, `car`);
+        // Add the second car sprite moving from left to right
+        this.car2 = this.physics.add.sprite(-100, 380, `car`);
         this.car2.setScale(0.05);
-        this.car2.setTint(0x2222dd); // Set tint to blue
 
-        // Define the tween to move the second car from top to bottom
+        // Define the tween to move the second car from left to right
         this.tweens.add({
             targets: this.car2,
-            y: 800, // Destination Y coordinate
-            duration: 2000, // Duration of the tween in milliseconds
+            x: this.game.config.width + 100,
+            duration: 2000,
             ease: 'Linear',
-            repeat: -1 // Repeat indefinitely
+            repeat: -1
         });
+        // Add the third car sprite moving from right to left
+        this.car3 = this.physics.add.sprite(this.game.config.width + 100, 520, `car`);
+        this.car3.setScale(0.05);
+
+        // Define the tween to move the third car from right to left
+        this.tweens.add({
+            targets: this.car3,
+            x: -100, 
+            duration: 1700,
+            ease: 'Linear',
+            repeat: -1 
+        });
+
+        // Setup collider between avatar and cars
+        this.physics.add.collider(this.avatar, [this.car1, this.car2, this.car3, this.car4], this.handleCollision, null, this);
+    }
+
+
+    handleCollision(avatar, car) {
+        // Stop car movement
+        car.body.setVelocity(0);
+
+        // Move the car in the opposite direction
+        car.body.setVelocityX(-car.body.velocity.x);
+        car.body.setVelocityY(-car.body.velocity.y);
+    }
+
+    addPedestrians() {
+        // Define the number of pedestrians you want to add
+        const numPedestrians = 3;
+
+        for (let i = 0; i < numPedestrians; i++) {
+            // Generate random coordinates within the canvas boundaries
+            const x = Phaser.Math.Between(0, this.game.config.width);
+            const y = Phaser.Math.Between(0, this.game.config.height);
+
+            // Add pedestrian sprite
+            const pedestrian = this.add.sprite(x, y, 'pedestrian');
+
+            // Scale the pedestrian 
+            pedestrian.setScale(1.6);
+
+            // Set the depth of the pedestrian sprite to appear behind the avatar
+            pedestrian.setDepth(0);
+        }
     }
 
 }
