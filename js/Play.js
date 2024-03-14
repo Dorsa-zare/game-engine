@@ -3,6 +3,8 @@ class Play extends Phaser.Scene {
         super({
             key: `play`
         });
+        // Initialize bullies array
+        this.bullies = [];
     }
 
     create() {
@@ -12,20 +14,33 @@ class Play extends Phaser.Scene {
         // Set the scale of the street image 
         street.setScale(1);
 
+
         // Add physics-enabled sprite for avatar
-        this.avatar = this.physics.add.sprite(300, 300, `avatar`);
+        this.avatar = this.physics.add.sprite(this.game.config.width / 2, 500, `avatar`); // Middle of the width, 700 Y
         // Set the scale of the sprite
         this.avatar.setScale(2.2);
+
+
+        // Display bus
+        this.addBus();
+
+        // Setup collider between avatar and bus
+        this.physics.add.overlap(this.avatar, this.bus, this.handleCollision, null, this);
+
+        // Setup collider between avatar and bullies
+        this.physics.add.collider(this.avatar, this.bullies, this.handleBullyCollision, null, this);
+
         // Call the method to create animations
         this.createAnimations();
         // Define cursors for keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // Display Cars
-        this.addCars();
+        // Display bully
+        this.addBully();
 
-        // Display pedestrians
-        this.addPedestrians();
+        // Initialize bullies array
+        this.bullies = [];
+
     }
 
 
@@ -45,8 +60,12 @@ class Play extends Phaser.Scene {
         else if (this.cursors.down.isDown) {
             this.avatar.setVelocityY(300);
         }
-        // Check collision between avatar and cars
-        this.physics.world.collide(this.avatar, [this.car1, this.car2], this.handleCollision, null, this);
+
+        if (this.bus.x < -200) {
+            this.bus.x = 1000
+            console.log(this.bus.x)
+        }
+
     }
 
     createAnimations() {
@@ -63,82 +82,88 @@ class Play extends Phaser.Scene {
 
         // Play the animation
         this.avatar.play(`avatar-moving`);
-        // Set the depth of the character sprite to appear on top of the green squares
+        // Set the depth of the character sprite to appear on top 
         this.avatar.setDepth(1);
     }
 
 
-    addCars() {
-        // Add the first car sprite moving from right to left
-        this.car1 = this.physics.add.sprite(this.game.config.width + 100, 170, `car`);
-        this.car1.setScale(0.05);
-
-        // Define the tween to move the first car from right to left
-        this.tweens.add({
-            targets: this.car1,
-            x: -100,
-            duration: 2300, // Duration of the tween in milliseconds
-            ease: 'Linear',
-            repeat: -1 // Repeat indefinitely
-        });
-
-        // Add the second car sprite moving from left to right
-        this.car2 = this.physics.add.sprite(-100, 300, `car`);
-        this.car2.setScale(0.05);
-
-        // Define the tween to move the second car from left to right
-        this.tweens.add({
-            targets: this.car2,
-            x: this.game.config.width + 100,
-            duration: 2000,
-            ease: 'Linear',
-            repeat: -1
-        });
-        // Add the third car sprite moving from right to left
-        this.car3 = this.physics.add.sprite(this.game.config.width + 100, 430, `car`);
-        this.car3.setScale(0.05);
-
-        // Define the tween to move the third car from right to left
-        this.tweens.add({
-            targets: this.car3,
-            x: -100,
-            duration: 1700,
-            ease: 'Linear',
-            repeat: -1
-        });
-
-        // Setup collider between avatar and cars
-        this.physics.add.collider(this.avatar, [this.car1, this.car2, this.car3], this.handleCollision, null, this);
+    addBus() {
+        // Add the first bus sprite moving from right to left
+        this.bus = this.physics.add.sprite(1000, 200, `bus`);
+        this.bus.setScale(0.30);
+        this.bus.setVelocityX(-200);
     }
 
 
-    handleCollision(avatar, car) {
-        // Stop car movement
-        car.body.setVelocity(0);
+    handleCollision(avatar, bus) {
+        // Stop bus movement
+        bus.body.setVelocity(0);
 
-        // Move the car in the opposite direction
-        car.body.setVelocityX(-car.body.velocity.x);
-        car.body.setVelocityY(-car.body.velocity.y);
+        // Move the bus in the opposite direction
+        bus.body.setVelocityX(-bus.body.velocity.x);
+        bus.body.setVelocityY(-bus.body.velocity.y);
+
     }
 
-    addPedestrians() {
-        // Define the number of pedestrians
-        const numPedestrians = 3;
+    addBully() {
+        // Define the number of bully
+        const numBully = 4;
+        const bullies = []; // Array to store the positions of existing bullies
 
-        for (let i = 0; i < numPedestrians; i++) {
-            // Generate random coordinates within the canvas boundaries
-            const x = Phaser.Math.Between(100, this.game.config.width);
-            const y = Phaser.Math.Between(100, this.game.config.height);
+        for (let i = 0; i < numBully; i++) {
+            let x, y;
+            let validPosition = false;
 
-            // Add pedestrian sprite
-            const pedestrian = this.add.sprite(x, y, 'pedestrian');
+            // Repeat until a valid position is found
+            while (!validPosition) {
+                // Generate random coordinates within the bottom half of the canvas
+                x = Phaser.Math.Between(100, this.game.config.width);
+                y = Phaser.Math.Between(this.game.config.height / 2 + 60, this.game.config.height);
 
-            // Scale the pedestrian 
-            pedestrian.setScale(1.6);
+                // Check if the position conflicts with existing bullies
+                let conflicting = false;
+                for (const bully of bullies) {
+                    if (Phaser.Math.Distance.Between(x, y, bully.x, bully.y) < 50) {
+                        conflicting = true;
+                        break;
+                    }
+                }
 
-            // Set the depth of the pedestrian sprite to appear behind the avatar
-            pedestrian.setDepth(0);
+                // If there's no conflict, set validPosition to true
+                if (!conflicting) {
+                    validPosition = true;
+                }
+            }
+
+            // Add bully sprite
+            const bully = this.physics.add.sprite(x, y, 'bully');
+
+            // Make bully pushable
+            bully.setPushable(true);
+
+            // Scale the bully 
+            bully.setScale(1.6);
+
+            // Set the depth of the bully sprite to appear behind the avatar
+            bully.setDepth(0);
+            // Enable collisions with the world bounds
+            bully.setCollideWorldBounds(true);
+
+            // Set the bounce effect when the bully hits the world bounds
+            bully.setBounce(1);
+
+            // Add the bully to the bullies array
+            this.bullies.push(bully);
+
         }
     }
 
+    handleBullyCollision(avatar, bully) {
+        // bully's velocity
+        const reducedVelocityX = bully.body.velocity.x * 0.2;
+        const reducedVelocityY = bully.body.velocity.y * 0.2;
+
+        // Set the velocity
+        bully.body.setVelocity(reducedVelocityX, reducedVelocityY);
+    }
 }
