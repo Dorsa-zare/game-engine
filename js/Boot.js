@@ -18,8 +18,10 @@ class Boot extends Phaser.Scene {
         this.load.image(`street`, `assets/images/street.png`);
         // Load car image
         this.load.image(`bus`, `assets/images/bus.png`);
-        // Load pedestrian image
+        // Load bully image
         this.load.image(`bully`, `assets/images/bully.png`);
+      // Load flower image
+      this.load.image(`flower`, `assets/images/flower.png`);
 
         this.load.on(`complete`, () => {
             this.scene.start(`play`);

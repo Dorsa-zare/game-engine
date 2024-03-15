@@ -5,6 +5,8 @@ class Play extends Phaser.Scene {
         });
         // Initialize bullies array
         this.bullies = [];
+        // Initialize flower counter
+        this.flowerCounter = 0;
     }
 
     create() {
@@ -25,14 +27,10 @@ class Play extends Phaser.Scene {
         // Setup collider between avatar and bus
         this.physics.add.overlap(this.avatar, this.bus, this.handleCollision, null, this);
 
-
         // Call the method to create animations
         this.createAnimations();
         // Define cursors for keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
-
-        // // Create the particle emitter
-        // this.createParticleEmitter();
 
         // Display bully
         this.addBully();
@@ -42,11 +40,25 @@ class Play extends Phaser.Scene {
 
         // Setup collider between bus and bullies
         for (const bully of this.bullies) {
-            this.physics.add.collider(this.bus, bully, this.handleBusBullyCollision, null, this);
+            this.physics.add.collider(this.bus, bully, (bus, bully) => this.handleBusBullyCollision(bus, bully), null, this);
         }
         // Initialize bullies array
         this.bullies = [];
+
+        // Create a group for flowers
+        this.flowerGroup = this.add.group();
+
+          // Create text object for congratulatory message
+          this.congratsText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 150, 'You made the world a nicer place!', {
+            fontFamily: 'Arial',
+            fontSize: 40,
+            color: '#ffffff',
+            align: 'center'
+        });
+        this.congratsText.setOrigin(0.5);
+        this.congratsText.setVisible(false); // Initially invisible
     }
+
 
     update() {
         // Movement controls for the avatar
@@ -120,7 +132,7 @@ class Play extends Phaser.Scene {
 
     addBully() {
         // Define the number of bully
-        const numBully = 4;
+        const numBully = 8;
         const bullies = []; // Array to store the positions of existing bullies
 
         for (let i = 0; i < numBully; i++) {
@@ -184,42 +196,10 @@ class Play extends Phaser.Scene {
         // Reset bus position and velocity
         this.resetBusPositionAndVelocity();
         // Handle bully collision
-        // this.showCollisionParticles();
         bully.destroy();
+        // Show flower at the collision position
+        this.showFlower(bully.x, bully.y);
     }
-
-
-    // createParticleEmitter() {
-    //     // Create particle emitter
-    //     console.log("Creating particle emitter...");
-    //     this.particles = this.add.particles();
-
-    //     // Define emitter configuration
-    //     this.emitterConfig = {
-    //         lifespan: 4000,
-    //         speed: { min: 150, max: 250 },
-    //         scale: { start: 1, end: 0 }, // Adjusted scale start value for better visibility
-    //         gravityY: 150,
-    //         blendMode: 'ADD',
-    //         emitZone: { source: new Phaser.Geom.Circle(0, 0, 10) }
-    //     };
-
-    //     // Show collision particles at the fixed position
-    //     this.showCollisionParticles();
-    // }
-
-
-    // showCollisionParticles() {
-    //     // Emit particles at the fixed position
-    //     console.log("Showing collision particles at fixed position (400, 300)...");
-
-    //     const emitter = this.particles.createEmitter({
-    //         x: 400,
-    //         y: 300,
-    //         ...this.emitterConfig
-    //     });
-    // }
-
 
     resetBusPositionAndVelocity() {
         // Reset bus position
@@ -229,5 +209,19 @@ class Play extends Phaser.Scene {
         this.bus.setVelocityY(0);
     }
 
+    showFlower(x, y) {
+        // Add flower at the collision position
+        const flower = this.add.sprite(x, y, 'flower');
+        flower.setScale(2.4);
+        // Add the flower to the flower group
+        this.flowerGroup.add(flower);
+        // Increment flower counter
+        this.flowerCounter++;
+        // Check if 8 flowers have been collected
+        if (this.flowerCounter >= 1) {
+            // Display the congratulatory message
+            this.congratsText.setVisible(true);
+        }
+    }
 }
 
