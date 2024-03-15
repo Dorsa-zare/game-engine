@@ -16,10 +16,14 @@ class Play extends Phaser.Scene {
 
         // Add physics-enabled sprite for avatar
         this.avatar = this.physics.add.sprite(this.game.config.width / 2, 500, `avatar`);
-        // Set the scale of the sprite
-        this.avatar.setScale(2.2);
-        // Set the depth of the character sprite to appear on top 
-        this.avatar.setDepth(3);
+        this.avatar.setScale(2.2); // Set the scale 
+        this.avatar.setDepth(3); // Set the depth to make it appear on top 
+
+        // Add physics-enabled sprite for red avatar
+        this.redavatar = this.physics.add.sprite(this.game.config.width / 2, 500, `redavatar`);
+        this.redavatar.setScale(2.2);
+        this.redavatar.setDepth(3);
+        this.redavatar.setVisible(false);// Initially hide the red avatar
 
         // Display bus
         this.addBus();
@@ -48,15 +52,25 @@ class Play extends Phaser.Scene {
         // Create a group for flowers
         this.flowerGroup = this.add.group();
 
-          // Create text object for congratulatory message
-          this.congratsText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 150, 'You made the world a nicer place!', {
-            fontFamily: 'Arial',
-            fontSize: 40,
-            color: '#ffffff',
-            align: 'center'
+        // Create text object for congratulatory message
+        this.congratsText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 110, 'Look who is the bully now!', {
+            fontFamily: 'Arial Black',
+            fontSize: 34,
+            color: '#990000',
+            stroke: ' #ff4d4d',
+            strokeThickness: 10
         });
         this.congratsText.setOrigin(0.5);
         this.congratsText.setVisible(false); // Initially invisible
+
+        // Create text object for instructions
+        const instructionsText = this.add.text(this.game.config.width / 2, 50, 'Use keyboard arrows to push your bullies under the bus', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            color: '#000000',
+            strokeThickness: 3
+        });
+        instructionsText.setOrigin(0.5);
     }
 
 
@@ -79,6 +93,15 @@ class Play extends Phaser.Scene {
 
         this.handleBusMovement();
 
+        // Check if the congratulatory message is visible
+        if (this.congratsText.visible) {
+            // Hide the regular avatar
+            this.avatar.setVisible(false);
+            // Show the red avatar
+            this.redavatar.setVisible(true);
+            // Change avatar animation to redavatar-moving
+            this.redavatar.anims.play('redavatar-moving', true);
+        }
         // Set the depth of the character sprite to appear on top 
         this.avatar.setDepth(3);
     }
@@ -96,10 +119,16 @@ class Play extends Phaser.Scene {
             repeat: -1
         });
 
-        // Play the animation
-        this.avatar.play(`avatar-moving`);
-        // Set the depth of the character sprite to appear on top 
-        this.avatar.setDepth(1);
+        // Animation properties for the red avatar
+        this.anims.create({
+            key: `redavatar-moving`,
+            frames: this.anims.generateFrameNumbers(`redavatar`, {
+                start: 0,
+                end: 9
+            }),
+            frameRate: 12,
+            repeat: -1
+        });
     }
 
 
@@ -117,17 +146,6 @@ class Play extends Phaser.Scene {
             // Reset bus position if it goes off the screen
             this.bus.x = 1000;
         }
-    }
-
-
-    handleCollision(avatar, bus) {
-        // Stop bus movement
-        bus.body.setVelocity(0);
-
-        // Move the bus in the opposite direction
-        bus.body.setVelocityX(-bus.body.velocity.x);
-        bus.body.setVelocityY(-bus.body.velocity.y);
-
     }
 
     addBully() {
@@ -148,7 +166,7 @@ class Play extends Phaser.Scene {
                 // Check if the position conflicts with existing bullies
                 let conflicting = false;
                 for (const bully of bullies) {
-                    if (Phaser.Math.Distance.Between(x, y, bully.x, bully.y) < 50) {
+                    if (Phaser.Math.Distance.Between(x, y, bully.x, bully.y) < 100) {
                         conflicting = true;
                         break;
                     }
@@ -218,7 +236,7 @@ class Play extends Phaser.Scene {
         // Increment flower counter
         this.flowerCounter++;
         // Check if 8 flowers have been collected
-        if (this.flowerCounter >= 1) {
+        if (this.flowerCounter >= 8) {
             // Display the congratulatory message
             this.congratsText.setVisible(true);
         }
