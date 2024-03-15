@@ -28,10 +28,7 @@ class Play extends Phaser.Scene {
         // Display bus
         this.addBus();
 
-        // Setup collider between avatar and bus
-        this.physics.add.overlap(this.avatar, this.bus, this.handleCollision, null, this);
-
-        // Call the method to create animations
+        // Call the method to create animations for avatar
         this.createAnimations();
         // Define cursors for keyboard input
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -40,7 +37,7 @@ class Play extends Phaser.Scene {
         this.addBully();
 
         // Setup collider between avatar and bullies
-        this.physics.add.collider(this.avatar, this.bullies, this.handleBullyCollision, null, this);
+        this.physics.add.collider(this.avatar, this.bullies, this.handleAvatarBullyCollision, null, this);
 
         // Setup collider between bus and bullies
         for (const bully of this.bullies) {
@@ -52,25 +49,11 @@ class Play extends Phaser.Scene {
         // Create a group for flowers
         this.flowerGroup = this.add.group();
 
-        // Create text object for congratulatory message
-        this.congratsText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 110, 'Look who is the bully now!', {
-            fontFamily: 'Arial Black',
-            fontSize: 34,
-            color: '#990000',
-            stroke: ' #ff4d4d',
-            strokeThickness: 10
-        });
-        this.congratsText.setOrigin(0.5);
-        this.congratsText.setVisible(false); // Initially invisible
+        //Show ending text
+        this.showEndingText();
 
-        // Create text object for instructions
-        const instructionsText = this.add.text(this.game.config.width / 2, 50, 'Use keyboard arrows to push your bullies under the bus', {
-            fontFamily: 'Arial',
-            fontSize: 20,
-            color: '#000000',
-            strokeThickness: 3
-        });
-        instructionsText.setOrigin(0.5);
+        //Show instructions text
+        this.showInstructionsText();
     }
 
 
@@ -201,10 +184,10 @@ class Play extends Phaser.Scene {
         }
     }
 
-    handleBullyCollision(avatar, bully) {
+    handleAvatarBullyCollision(avatar, bully) {
         // bully's velocity
-        const reducedVelocityX = bully.body.velocity.x * 0.2;
-        const reducedVelocityY = bully.body.velocity.y * 0.2;
+        const reducedVelocityX = bully.body.velocity.x * 0.5;
+        const reducedVelocityY = bully.body.velocity.y * 0.5;
 
         // Set the velocity
         bully.body.setVelocity(reducedVelocityX, reducedVelocityY);
@@ -237,9 +220,33 @@ class Play extends Phaser.Scene {
         this.flowerCounter++;
         // Check if 8 flowers have been collected
         if (this.flowerCounter >= 8) {
-            // Display the congratulatory message
+            // Display the ending text
             this.congratsText.setVisible(true);
         }
+    }
+
+    showInstructionsText() {
+        // Create text object for instructions
+        const instructionsText = this.add.text(this.game.config.width / 2, 50, 'Use keyboard arrows to push your bullies under the bus', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            color: '#000000',
+            strokeThickness: 3
+        });
+        instructionsText.setOrigin(0.5);
+    }
+
+    showEndingText() {
+        // Create text object for ending text
+        this.congratsText = this.add.text(this.game.config.width / 2, this.game.config.height / 2 + 110, 'Look who is the bully now!', {
+            fontFamily: 'Arial Black',
+            fontSize: 34,
+            color: '#990000',
+            stroke: ' #ff4d4d',
+            strokeThickness: 10
+        });
+        this.congratsText.setOrigin(0.5);
+        this.congratsText.setVisible(false); // Initially invisible
     }
 }
 
