@@ -56,28 +56,26 @@ class Play extends Phaser.Scene {
         this.showInstructionsText();
     }
 
-
     update() {
         // Movement controls for the avatar
         this.avatar.setVelocity(0);
 
         if (this.cursors.left.isDown) {
             this.avatar.setVelocityX(-300);
-        }
-        else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown) {
             this.avatar.setVelocityX(300);
         }
         if (this.cursors.up.isDown) {
             this.avatar.setVelocityY(-300);
-        }
-        else if (this.cursors.down.isDown) {
+        } else if (this.cursors.down.isDown) {
             this.avatar.setVelocityY(300);
         }
 
-        this.handleBusMovement();
-
-        // Check if the congratulatory message is visible
-        if (this.congratsText.visible) {
+        // Play animations for both avatars
+        if (!this.congratsText.visible) {
+            // Regular avatar animation
+            this.avatar.anims.play('avatar-moving', true);
+        } else {
             // Hide the regular avatar
             this.avatar.setVisible(false);
             // Show the red avatar
@@ -85,9 +83,13 @@ class Play extends Phaser.Scene {
             // Change avatar animation to redavatar-moving
             this.redavatar.anims.play('redavatar-moving', true);
         }
+
+        this.handleBusMovement();
+
         // Set the depth of the character sprite to appear on top 
         this.avatar.setDepth(3);
     }
+
 
 
     createAnimations() {
