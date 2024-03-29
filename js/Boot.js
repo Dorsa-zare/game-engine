@@ -13,8 +13,8 @@ class Boot extends Phaser.Scene {
             frameHeight: 32,
             endFrame: 5
         });
-         // Load red avatar image
-         this.load.spritesheet(`redavatar`, `assets/images/redavatar.png`, {
+        // Load red avatar image
+        this.load.spritesheet(`redavatar`, `assets/images/redavatar.png`, {
             frameWidth: 32,
             frameHeight: 32,
             endFrame: 9
@@ -28,9 +28,9 @@ class Boot extends Phaser.Scene {
         this.load.image(`bully`, `assets/images/bully.png`);
         // Load flower image
         this.load.image(`flower`, `assets/images/flower.png`);
-        // Load rainbow image
-        this.load.image(`rainbow`, `assets/images/rainbow.png`);
-     
+        // Load school image
+        this.load.image(`school`, `assets/images/school.png`);
+
         this.load.on(`complete`, () => {
             this.scene.start(`bullying`);
         });

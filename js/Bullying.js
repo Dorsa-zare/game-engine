@@ -6,11 +6,29 @@ class Bullying extends Phaser.Scene {
     }
 
     create() {
-        // Add code here to create the scene
-        this.add.rectangle(400, 300, 800, 600, 0x0000ff); // Add blue background
+        // Add the street image as the background
+        const street = this.add.image(0, 0, 'school').setOrigin(0);
+        street.setScale(1);
+
+        // Display the avatar sprite
+        this.avatar = this.physics.add.sprite(this.game.config.width / 2, 530, `avatar`);
+        this.avatar.setScale(2.5);
+        this.avatar.setDepth(3);
+
+        // Define cursors for keyboard input
+        this.cursors = this.input.keyboard.createCursorKeys();
+
+        
     }
 
     update() {
-        // Add code here for scene updates
+        // Movement controls for the avatar
+        this.avatar.setVelocity(0);
+
+        if (this.cursors.left.isDown) {
+            this.avatar.setVelocityX(-300);
+        } else if (this.cursors.right.isDown) {
+            this.avatar.setVelocityX(300);
+        }
     }
 }
