@@ -32,7 +32,7 @@ class Boot extends Phaser.Scene {
         this.load.image(`rainbow`, `assets/images/rainbow.png`);
      
         this.load.on(`complete`, () => {
-            this.scene.start(`play`);
+            this.scene.start(`bullying`);
         });
     }
 
