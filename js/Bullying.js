@@ -24,6 +24,7 @@ class Bullying extends Phaser.Scene {
         // Add the bully image at the top of the screen
         const bullyImage = this.add.image(this.game.config.width / 2, 15, 'bully');
         bullyImage.setScale(2.7);
+        this.avatar.setDepth(4);
         bullyImage.setAngle(180); // Rotate the image 180 degrees
 
         // Create bully words
@@ -40,6 +41,21 @@ class Bullying extends Phaser.Scene {
         // Set collision detection between avatar and canvas bounds
         this.physics.world.setBoundsCollision(true, true, true, false);
 
+        // Handle Heart Image
+        this.handleHeartImage();
+
+        // Flag to track if heart is visible
+        this.heartVisible = false;
+
+        // Enable collisions between the avatar and bully words
+        this.physics.add.overlap(this.avatar, this.bullyWords, this.showHeartImage, null, this);
+       
+        // Timer for checking if heart is visible after 25 seconds
+        this.checkHeartTimer = this.time.addEvent({
+            delay: 25000, // 25 seconds
+            callback: this.checkHeartVisibility,
+            callbackScope: this
+        });
     }
 
     update() {
@@ -92,6 +108,35 @@ class Bullying extends Phaser.Scene {
         } else {
             // Reset the index to start from the beginning
             this.bullyWordIndex = 0;
+        }
+    }
+
+    // Handle Heart Image
+    handleHeartImage() {
+        // Define the heart image and position it at the top right corner
+        this.heart = this.add.image(this.game.config.width - 50, 40, 'heart');
+        this.heart.setScale(0.08);
+        this.heart.visible = false; // Initially hide the heart image
+    }
+
+    // Show Heart Image
+    showHeartImage(avatar, bullyWord) {
+        // Show the heart image if it's not already visible
+        if (!this.heartVisible) {
+            this.heart.visible = true;
+            this.heartVisible = true;
+        }
+    }
+    // Check if heart is visible after 20 seconds
+    checkHeartVisibility() {
+        if (this.heartVisible) {
+            // Display text indicating the heart has been broken
+            const brokenHeartText = this.add.text(this.game.config.width / 2, 325, "Your heart has been broken by the bullies.\nYou will have the chance to get revenge now.", {
+                font: "20px Arial",
+                fill: "#ff0000", // Red color
+                align: "center"
+            });
+            brokenHeartText.setOrigin(0.5);
         }
     }
 

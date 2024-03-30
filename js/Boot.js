@@ -20,6 +20,10 @@ class Boot extends Phaser.Scene {
             endFrame: 9
         });
 
+        // Load school image
+        this.load.image(`school`, `assets/images/school.png`);
+        // Load broken heart image
+        this.load.image(`heart`, `assets/images/heart.png`);
         // Load street image
         this.load.image(`street`, `assets/images/street.png`);
         // Load car image
@@ -28,8 +32,6 @@ class Boot extends Phaser.Scene {
         this.load.image(`bully`, `assets/images/bully.png`);
         // Load flower image
         this.load.image(`flower`, `assets/images/flower.png`);
-        // Load school image
-        this.load.image(`school`, `assets/images/school.png`);
 
         this.load.on(`complete`, () => {
             this.scene.start(`bullying`);
