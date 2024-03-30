@@ -49,7 +49,7 @@ class Bullying extends Phaser.Scene {
 
         // Enable collisions between the avatar and bully words
         this.physics.add.overlap(this.avatar, this.bullyWords, this.showHeartImage, null, this);
-       
+
         // Timer for checking if heart is visible after 25 seconds
         this.checkHeartTimer = this.time.addEvent({
             delay: 25000, // 25 seconds
@@ -127,6 +127,7 @@ class Bullying extends Phaser.Scene {
             this.heartVisible = true;
         }
     }
+
     // Check if heart is visible after 20 seconds
     checkHeartVisibility() {
         if (this.heartVisible) {
@@ -137,7 +138,33 @@ class Bullying extends Phaser.Scene {
                 align: "center"
             });
             brokenHeartText.setOrigin(0.5);
+        } else {
+            // Display text indicating that you tried to ignore the bullies
+            const ignoredBulliesText = this.add.text(this.game.config.width / 2, 325, "You tried to ignore what they said about you,\nBut, you are still hurt deep down. \nNow you will have the chance to get revenge!", {
+                font: "18px Arial",
+                fill: "#ff0000", // Red color
+                align: "center"
+            });
+            ignoredBulliesText.setOrigin(0.5);
         }
+        // Add "Get Revenge" text
+        const getRevengeText = this.add.text(this.game.config.width / 2, 390, "Get Revenge", {
+            font: "20px Arial",
+            fill: "#ffffff", // White color
+            backgroundColor: "#ff0000", // Black background
+            padding: {
+                x: 10,
+                y: 5
+            },
+            align: "center"
+        });
+        getRevengeText.setOrigin(0.5);
+        getRevengeText.setInteractive(); // Make text clickable
+        getRevengeText.on('pointerdown', () => {
+            // Transition to the play scene
+            this.scene.start('play');
+        });
     }
+
 
 }
