@@ -92,13 +92,13 @@ class Bullying extends Phaser.Scene {
             this.bullyWords.add(bullyWord);
 
             // Set initial y position for the bully word
-            bullyWord.y = -30; // Start above the canvas
+            bullyWord.y = -100; // Start above the canvas
 
             // Enable physics for the bully word
             this.physics.world.enable(bullyWord);
 
             // Set gravity for the bully word
-            bullyWord.body.setGravityY(100);
+            bullyWord.body.setGravityY(150);
 
             // Set collide world bounds for the bully word
             bullyWord.body.setCollideWorldBounds(true);
@@ -132,26 +132,34 @@ class Bullying extends Phaser.Scene {
     checkHeartVisibility() {
         if (this.heartVisible) {
             // Display text indicating the heart has been broken
-            const brokenHeartText = this.add.text(this.game.config.width / 2, 325, "Your heart has been broken by the bullies.\nYou will have the chance to get revenge now.", {
+            this.brokenHeartText = this.add.text(this.game.config.width / 2, 325, "Your heart has been broken by the bullies.\nYou will have the chance to get revenge now.", {
                 font: "20px Arial",
                 fill: "#ff0000", // Red color
                 align: "center"
             });
-            brokenHeartText.setOrigin(0.5);
+            this.brokenHeartText.setOrigin(0.5);
         } else {
             // Display text indicating that you tried to ignore the bullies
-            const ignoredBulliesText = this.add.text(this.game.config.width / 2, 325, "You tried to ignore what they said about you,\nBut, you are still hurt deep down. \nNow you will have the chance to get revenge!", {
+            this.ignoredBulliesText = this.add.text(this.game.config.width / 2, 325, "You tried to ignore what they said about you,\nBut, you are still hurt deep down. \nNow you will have the chance to get revenge!", {
                 font: "18px Arial",
                 fill: "#ff0000", // Red color
                 align: "center"
             });
-            ignoredBulliesText.setOrigin(0.5);
+            this.ignoredBulliesText.setOrigin(0.5);
         }
+
+        // Add clickable text options
+        this.addClickableText();
+    }
+
+
+    // Add clickable text options
+    addClickableText() {
         // Add "Get Revenge" text
-        const getRevengeText = this.add.text(this.game.config.width / 2, 390, "Get Revenge", {
+        const getRevengeText = this.add.text(this.game.config.width / 2 + 100, 400, "Get Revenge", {
             font: "20px Arial",
             fill: "#ffffff", // White color
-            backgroundColor: "#ff0000", // Black background
+            backgroundColor: "#ff0000",
             padding: {
                 x: 10,
                 y: 5
@@ -164,7 +172,23 @@ class Bullying extends Phaser.Scene {
             // Transition to the play scene
             this.scene.start('play');
         });
+
+        // Add "Forgive" text
+        const forgiveText = this.add.text(this.game.config.width / 2 - 100, 400, "Forgive", {
+            font: "20px Arial",
+            fill: "#ffffff", // White color
+            backgroundColor: "#ff0000",
+            padding: {
+                x: 10,
+                y: 5
+            },
+            align: "center"
+        });
+        forgiveText.setOrigin(0.5);
+        forgiveText.setInteractive(); // Make text clickable
+        forgiveText.on('pointerdown', () => {
+            // Transition to the Forgiveness scene
+            this.scene.start('forgiveness');
+        });
     }
-
-
 }

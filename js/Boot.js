@@ -32,6 +32,8 @@ class Boot extends Phaser.Scene {
         this.load.image(`bully`, `assets/images/bully.png`);
         // Load flower image
         this.load.image(`flower`, `assets/images/flower.png`);
+        // Load rainbow image
+        this.load.image(`rainbow`, `assets/images/rainbow.png`);
 
         this.load.on(`complete`, () => {
             this.scene.start(`bullying`);
